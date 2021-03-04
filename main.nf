@@ -155,7 +155,7 @@ if( workflow.profile == 'awsbatch') {
   // related: https://github.com/nextflow-io/nextflow/issues/813
   if (!workflow.workDir.startsWith('s3:') || !params.outdir.startsWith('s3:')) exit 1, "Workdir or Outdir not on S3 - specify S3 Buckets for each to run on AWSBatch!"
 }
-process impute-sex{
+process impute_sex{
     input:
     tuple file(study_name_bed), file(study_name_bim), file(study_name_fam) from bfile_ch
     
