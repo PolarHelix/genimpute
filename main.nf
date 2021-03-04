@@ -155,34 +155,22 @@ if( workflow.profile == 'awsbatch') {
   // related: https://github.com/nextflow-io/nextflow/issues/813
   if (!workflow.workDir.startsWith('s3:') || !params.outdir.startsWith('s3:')) exit 1, "Workdir or Outdir not on S3 - specify S3 Buckets for each to run on AWSBatch!"
 }
-
-process harmonise_genotypes{
+process impute-sex{
     input:
-    set file(study_name_bed), file(study_name_bim), file(study_name_fam) from bfile_ch
-    set file(vcf_file), file(vcf_file_index) from ref_panel_harmonise_genotypes.collect()
-
+    tuple file(study_name_bed), file(study_name_bim), file(study_name_fam) from bfile_ch
+    
     output:
-    set file("harmonised.bed"), file("harmonised.bim"), file("harmonised.fam") into harmonised_genotypes
-
+    file CEDAR_chr23_noHET into sex_imputed
+    
     script:
-    if (params.harmonise_genotypes) {
     """
-    java -jar /usr/bin/GenotypeHarmonizer.jar\
-     --input ${study_name_bed.baseName}\
-     --inputType PLINK_BED\
-     --ref ${vcf_file.simpleName}\
-     --refType VCF\
-     --update-id\
-     --output harmonised
+    plink --bfile ${study_name_bed.baseName} --impute-sex --make-bed --out CEDAR_sex_imputed
+    plink --bfile CEDAR_sex_imputed --chr 23 --make-bed --out CEDAR_chr23
+    plink --bfile CEDAR_chr23 --split-x b37 no-fail --make-bed --out CEDAR_split_x
+    plink --bfile CEDAR_split_x --chr 23 --make-bed --out CEDAR_chr23_noPAR
+    plink --bfile CEDAR_chr23_noPAR --make-bed --set-hh-missing --out CEDAR_chr23_noHET
+    
     """
-    }
-    else {
-    """
-    cp $study_name_bed harmonised.bed
-    cp $study_name_bim harmonised.bim
-    cp $study_name_fam harmonised.fam
-    """
-    }
-}
 
 
+    
