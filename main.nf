@@ -164,11 +164,11 @@ process impute_sex{
     
     script:
     """
-    plink --bfile ${study_name_bed.baseName} --impute-sex --make-bed --out CEDAR_sex_imputed
-    plink --bfile CEDAR_sex_imputed --chr 23 --make-bed --out CEDAR_chr23
-    plink --bfile CEDAR_chr23 --split-x b37 no-fail --make-bed --out CEDAR_split_x
-    plink --bfile CEDAR_split_x --chr 23 --make-bed --out CEDAR_chr23_noPAR
-    plink --bfile CEDAR_chr23_noPAR --make-bed --set-hh-missing --out CEDAR_chr23_noHET
+    plink2 --bfile ${study_name_bed.baseName} --impute-sex --make-bed --out CEDAR_sex_imputed
+    plink2 --bfile CEDAR_sex_imputed --chr 23 --make-bed --out CEDAR_chr23
+    plink2 --bfile CEDAR_chr23 --split-x b37 no-fail --make-bed --out CEDAR_split_x
+    plink2 --bfile CEDAR_split_x --chr 23 --make-bed --out CEDAR_chr23_noPAR
+    plink2 --bfile CEDAR_chr23_noPAR --make-bed --set-hh-missing --out CEDAR_chr23_noHET
     
     """
 }
