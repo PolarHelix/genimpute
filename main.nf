@@ -160,7 +160,7 @@ process impute_sex{
     tuple file(study_name_bed), file(study_name_bim), file(study_name_fam) from bfile_ch
     
     output:
-    file CEDAR_chr23_noHET into sex_imputed
+    set file("CEDAR_chr23_noHET.bed"), file("CEDAR_chr23_noHET.bim"), file("CEDAR_chr23_noHET.fam") into sex_imputed
     
     script:
     """
