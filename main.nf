@@ -171,6 +171,6 @@ process impute_sex{
     plink --bfile CEDAR_chr23_noPAR --make-bed --set-hh-missing --out CEDAR_chr23_noHET
     
     """
-
+}
 
     
