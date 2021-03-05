@@ -173,4 +173,14 @@ process impute_sex{
     """
 }
 
+process extract_female_samples{
+    input:
+    output:
+    file CEDAR_females.txt
+    script:
+    """
+    plink2 --bfile CEDAR_chr23_noHET --filter-females --make-bed --out CEDAR_females
+    cut -f1 -d' ' CEDAR_females.fam > CEDAR_females.txt
+    """
+ }
     
