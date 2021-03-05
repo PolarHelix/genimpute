@@ -202,7 +202,7 @@ process extract_female_samples{
     java -jar ~/software/GenotypeHarmonizer-1.4.20-SNAPSHOT/GenotypeHarmonizer.jar\
      --input CEDAR_chr23_noHET\
      --inputType PLINK_BED\
-     --ref /gpfs/hpc/projects/genomic_references/1000G/GRCh37/1000G_GRCh37_variant_information\
+     --ref ${vcf_file.simpleName}\
      --refType VCF\
      --update-id\
      --output CEDAR_chr23_noHET_harmonized
