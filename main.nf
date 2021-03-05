@@ -160,7 +160,7 @@ process impute_sex{
     tuple file(study_name_bed), file(study_name_bim), file(study_name_fam) from bfile_ch
     
     output:
-    set file("CEDAR_chr23_noHET.bed"), file("CEDAR_chr23_noHET.bim"), file("CEDAR_chr23_noHET.fam") into sex_imputed
+    tuple file("CEDAR_chr23_noHET.bed"), file("CEDAR_chr23_noHET.bim"), file("CEDAR_chr23_noHET.fam") into sex_imputed,harmonize_input_ch
     
     script:
     """
@@ -175,8 +175,9 @@ process impute_sex{
 
 process extract_female_samples{
     input:
+    tuple file("CEDAR_chr23_noHET.bed"), file("CEDAR_chr23_noHET.bim"), file("CEDAR_chr23_noHET.fam") into sex_imputed
     output:
-    file CEDAR_females.txt
+    file(“CEDAR_females.txt”) into female_sample_list_ch
     script:
     """
     plink2 --bfile CEDAR_chr23_noHET --filter-females --make-bed --out CEDAR_females
@@ -185,13 +186,12 @@ process extract_female_samples{
  }
  process genotype_harmonizer{
     input:
-    set file(CEDAR_chr23_noHET.bed), file(CEDAR_chr23_noHET.bim), file(CEDAR_chr23_noHET.fam) from bfile_ch
-    set file(1000G_GRCh37_variant_information.vcf.gz), file(1000G_GRCh37_variant_information.vcf.gz.tbi) from /gpfs/hpc/projects/genomic_references/1000G/GRCh37
-
+    tuple file(bed), file(bim), file(fam) from harmonize_input_ch
+    set file(vcf_file), file(vcf_file_index) from ref_panel_harmonise_genotypes.collect()
 
     output:
     
-    set file("CEDAR_chr23_noHET_harmonized.bed"), file("CEDAR_chr23_noHET_harmonized.bim"), file("CEDAR_chr23_noHET_harmonized.fam") into harmonised_genotypes
+    tuple file("CEDAR_chr23_noHET_harmonized.bed"), file("CEDAR_chr23_noHET_harmonized.bim"), file("CEDAR_chr23_noHET_harmonized.fam") into harmonised_genotypes
    
     script:
     """
