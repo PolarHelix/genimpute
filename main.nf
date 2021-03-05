@@ -183,4 +183,28 @@ process extract_female_samples{
     cut -f1 -d' ' CEDAR_females.fam > CEDAR_females.txt
     """
  }
+ process genotype_harmonizer{
+    input:
+    set file(CEDAR_chr23_noHET.bed), file(CEDAR_chr23_noHET.bim), file(CEDAR_chr23_noHET.fam) from bfile_ch
+    set file(1000G_GRCh37_variant_information.vcf.gz), file(1000G_GRCh37_variant_information.vcf.gz.tbi) from /gpfs/hpc/projects/genomic_references/1000G/GRCh37
+
+
+    output:
     
+    set file("CEDAR_chr23_noHET_harmonized.bed"), file("CEDAR_chr23_noHET_harmonized.bim"), file("CEDAR_chr23_noHET_harmonized.fam") into harmonised_genotypes
+   
+    script:
+    """
+    sed 's/^23/X/g' CEDAR_chr23_noHET.bim > CEDAR_chr23_noHET.new_bim
+    mv CEDAR_chr23_noHET.new_bim CEDAR_chr23_noHET.bim
+    
+    module load java-1.8.0_40
+    java -jar ~/software/GenotypeHarmonizer-1.4.20-SNAPSHOT/GenotypeHarmonizer.jar\
+     --input CEDAR_chr23_noHET\
+     --inputType PLINK_BED\
+     --ref /gpfs/hpc/projects/genomic_references/1000G/GRCh37/1000G_GRCh37_variant_information\
+     --refType VCF\
+     --update-id\
+     --output CEDAR_chr23_noHET_harmonized
+    """
+ }
