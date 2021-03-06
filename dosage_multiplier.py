@@ -10,8 +10,8 @@ args.parser.parse_args()
 
 data = pd.read_csv(args.filename,sep='\t')
 
-for n, d in data.iteritems():
-    if n.startswith('IPC'):
+for n, d in data.iloc[:,9:].iteritems():
+    
         new_list = []
         for i in d:
             print(i)
