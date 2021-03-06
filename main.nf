@@ -227,3 +227,27 @@ process extract_female_samples{
     -i /gpfs/hpc/projects/genomic_references/1000G/GRCh37/1000G_GRCh37_variant_information.vcf.gz
     """
   }
+process female_qc{
+input:
+file(txt) from female_sample_list_ch
+file CEDAR_harmonised_chrX.fixref.vcf.gz from filter_vcf_input
+
+output:
+file CEDAR_female_passed_regions.txt into passed_regions #(or do i have to create a channel and put this file into that channel?)
+
+script:
+"""
+bcftools view -S CEDAR_females.txt CEDAR_harmonised_chrX.fixref.vcf.gz -Oz -o CEDAR.females_only.vcf.gz
+bcftools +fill-tags CEDAR.females_only.vcf.gz -Oz -o CEDAR.females_only.tagged.vcf.gz
+bcftools filter -i 'INFO/HWE > 1e-6 & F_MISSING < 0.05 & MAF[0] > 0.01' CEDAR.females_only.tagged.vcf.gz |\
+     bcftools filter -e 'REF="N" | REF="I" | REF="D"' |\
+     bcftools filter -e "ALT='.'" |\
+     bcftools norm -d all |\
+     bcftools norm -m+any |\
+     bcftools view -m2 -M2 -Oz -o CEDAR.females_only.filtered.vcf.gz
+bcftools query -f "%CHROM\t%POS\n" CEDAR.females_only.filtered.vcf.gz > CEDAR_female_passed_regions.txt
+
+
+
+"""
+}
