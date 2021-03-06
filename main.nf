@@ -208,3 +208,22 @@ process extract_female_samples{
      --output CEDAR_chr23_noHET_harmonized
     """
  }
+ 
+ process process make_vcf{
+    input:
+    tuple file(bed), file(bim), file(fam) from harmonised_genotypes
+    
+    output:
+    CEDAR_harmonised_chrX.fixref.vcf.gz into filter_vcf_input
+    
+    script:
+    """
+    plink2 --bfile ${CEDAR_chr23_noHET_harmonized.baseName} --recode vcf-iid --out CEDAR_chr23_noHET_harmonized
+    printf '23\tX\n' > 23_to_x.tsv
+    bcftools annotate --rename-chrs 23_to_x.tsv CEDAR_chr23_noHET_harmonized.vcf -Oz -o CEDAR_harmonised_chrX.vcf.gz
+    bcftools filter -e "ALT='.'" CEDAR_harmonised_chrX.vcf.gz | bcftools filter -i 'F_MISSING < 0.05' -Oz -o CEDAR_harmonised_chrX.filtered.vcf.gz
+    bcftools +fixref CEDAR_harmonised_chrX.filtered.vcf.gz -Oz -o CEDAR_harmonised_chrX.fixref.vcf.gz -- \
+    -f /gpfs/hpc/projects/genomic_references/annotations/GRCh37/Homo_sapiens.GRCh37.dna.primary_assembly.fa \
+    -i /gpfs/hpc/projects/genomic_references/1000G/GRCh37/1000G_GRCh37_variant_information.vcf.gz
+    """
+  }
