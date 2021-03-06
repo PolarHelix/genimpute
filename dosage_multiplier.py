@@ -4,11 +4,10 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Multiply male genotype dosage by 2")
 
-parser.add_argument(-i, --inputfile,"filename",type=str,help = "input file name")
-parser.add_argument(-0, --outputfile,"outputname",type=str,help = "output file name")
+parser.add_argument(-i, --inputfile, "filename", type=str,help = "input file name")
+parser.add_argument(-o, --outputfile, "outputname",type=str,help = "output file name")
 args.parser.parse_args()
-filename = "your_file_name.vcf"
-outputname= "your_output_filename.vcf"
+
 data = pd.read_csv(args.filename,sep='\t')
 
 for n, d in data.iteritems():
