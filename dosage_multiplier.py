@@ -4,11 +4,11 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Multiply male genotype dosage by 2")
 
-parser.add_argument(-i, --inputfile, "filename", type=str,help = "input file name")
-parser.add_argument(-o, --outputfile, "outputname",type=str,help = "output file name")
-args.parser.parse_args()
+parser.add_argument("-i",type=str,help = "input file name")
+parser.add_argument("-o",type=str,help = "output file name")
+args = parser.parse_args()
 
-data = pd.read_csv(args.filename,sep='\t')
+data = pd.read_csv(str(args.i),sep='\t',comment="#")
 
 for n, d in data.iloc[:,9:].iteritems():
     
@@ -23,4 +23,4 @@ for n, d in data.iloc[:,9:].iteritems():
         data = data.drop(n, axis=1)
         data[n] = new_list
 
-data.to_csv(args.outputname, sep='\t',index = False)
+data.to_csv(str(args.o), sep='\t',index = False)
